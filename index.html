@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy II</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f8f5;
+  --white: #ffffff;
+  --ink: #181714;
+  --ink2: #3c3a35;
+  --muted: #9a948a;
+  --border: #e4e0d8;
+  --border2: #d0ccc2;
+  --red: #c0392b;
+  --red-bg: #fef2f1;
+  --red-border: #f5c2bd;
+  --green: #2c6e49;
+  --green-bg: #f0f7f3;
+  --green-border: #a8d5be;
+  --gold: #9a6f1a;
+  --gold-bg: #fdf7ed;
+  --shadow-sm: 0 1px 4px rgba(24,23,20,.07);
+  --shadow: 0 3px 16px rgba(24,23,20,.09);
+  --shadow-lg: 0 8px 32px rgba(24,23,20,.12);
+  --r: 14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* ── SCREENS ── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ══════════ HOME ══════════ */
+#home{padding:0 0 80px}
+
+.home-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--white);z-index:10;
+  box-shadow:var(--shadow-sm);
+}
+.home-nav-title{font-family:'Lora',serif;font-size:18px;font-weight:600}
+.nav-tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px}
+.nav-tab{
+  padding:7px 16px;border-radius:8px;border:none;background:none;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.nav-tab.active{background:var(--white);color:var(--ink);box-shadow:var(--shadow-sm)}
+
+.home-body{max-width:680px;margin:0 auto;padding:32px 20px 0}
+
+.home-hero{margin-bottom:32px}
+.home-hero h1{font-family:'Lora',serif;font-size:clamp(28px,6vw,40px);font-weight:400;line-height:1.15;margin-bottom:6px}
+.home-hero h1 em{font-style:italic;color:var(--red)}
+.home-hero p{font-size:15px;color:var(--muted)}
+
+/* Overall progress */
+.overall-progress{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 24px;margin-bottom:28px;box-shadow:var(--shadow-sm);
+}
+.op-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.op-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.op-pct{font-family:'Lora',serif;font-size:26px;color:var(--green)}
+.prog-track{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--green),#52b788);border-radius:99px;transition:width .6s ease}
+
+/* Day cards */
+.section-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:12px;
+}
+.days-list{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+
+.day-row{
+  background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:18px 20px;display:flex;align-items:center;gap:16px;
+  cursor:pointer;transition:all .2s;box-shadow:var(--shadow-sm);
+  text-decoration:none;color:inherit;
+}
+.day-row:hover{border-color:var(--red);box-shadow:var(--shadow);transform:translateY(-1px)}
+.day-row.locked{opacity:.55;cursor:not-allowed;pointer-events:none}
+.day-row.done{border-color:var(--green-border);background:var(--green-bg)}
+
+.day-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:1px;color:var(--muted);min-width:44px;
+}
+.day-main{flex:1}
+.day-title{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:2px}
+.day-sub{font-size:12px;color:var(--muted);font-style:italic}
+.day-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:90px}
+.day-score{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink2)}
+.day-minibar{width:80px;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.day-minifill{height:100%;background:var(--green);border-radius:99px;transition:width .4s}
+.day-row.active-day .day-minifill{background:var(--red)}
+.day-status{font-size:16px}
+.thresh-pill{
+  font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;
+  padding:2px 8px;border-radius:99px;background:var(--gold-bg);
+  color:var(--gold);border:1px solid #e8d08a;margin-top:3px;display:inline-block;
+}
+
+/* Struggle tab */
+.struggle-section{margin-bottom:32px}
+.struggle-empty{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px;text-align:center;color:var(--muted);font-size:14px;font-style:italic;
+}
+.struggle-card{
+  background:var(--white);border:1.5px solid var(--red-border);border-radius:var(--r);
+  padding:16px 20px;margin-bottom:8px;cursor:pointer;transition:all .2s;
+  box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px;
+}
+.struggle-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.struggle-q{font-size:13.5px;color:var(--ink2);flex:1}
+.struggle-errors{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;
+  color:var(--red);background:var(--red-bg);padding:3px 10px;
+  border-radius:99px;white-space:nowrap;
+}
+.btn-struggle-all{
+  width:100%;padding:14px;border-radius:var(--r);border:1.5px solid var(--red-border);
+  background:var(--red-bg);color:var(--red);font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px;
+}
+.btn-struggle-all:hover{background:#fde8e6}
+
+/* ══════════ EDIT MODAL ══════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);
+  z-index:100;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--white);border-radius:18px;padding:28px;width:100%;
+  max-width:620px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);
+}
+.modal h3{font-family:'Lora',serif;font-size:18px;margin-bottom:6px}
+.modal-q{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:16px;line-height:1.5}
+.modal textarea{
+  width:100%;min-height:160px;border:1.5px solid var(--border2);border-radius:10px;
+  padding:14px;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;
+  color:var(--ink2);resize:vertical;outline:none;transition:border-color .2s;
+}
+.modal textarea:focus{border-color:var(--red)}
+.modal-btns{display:flex;gap:10px;margin-top:14px;justify-content:flex-end}
+.btn-cancel{padding:10px 22px;border-radius:10px;border:1.5px solid var(--border2);background:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);cursor:pointer}
+.btn-save{padding:10px 22px;border-radius:10px;border:none;background:var(--ink);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+.btn-save:hover{background:var(--ink2)}
+
+/* ══════════ QUIZ ══════════ */
+#quiz{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 20px 60px}
+
+.quiz-header{
+  width:100%;max-width:680px;display:flex;align-items:center;gap:14px;
+  padding:18px 0 20px;border-bottom:1px solid var(--border);margin-bottom:28px;
+}
+.btn-back{
+  background:none;border:1.5px solid var(--border);border-radius:9px;
+  padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:14px;
+  color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.btn-back:hover{color:var(--ink);border-color:var(--ink2)}
+.qh-info{flex:1}
+.qh-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.qh-title{font-family:'Lora',serif;font-size:18px}
+
+/* Progress dots */
+.dots-wrap{width:100%;max-width:680px;display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .3s}
+.dot.current{background:var(--ink);transform:scale(1.4)}
+.dot.correct{background:var(--green)}
+.dot.wrong{background:var(--red)}
+
+/* Round info */
+.round-line{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:20px;
+}
+.round-line span{color:var(--red);font-weight:600}
+
+/* Threshold bar */
+.thresh-bar-wrap{
+  width:100%;max-width:680px;background:var(--white);border:1px solid var(--border);
+  border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;
+}
+.tb-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tb-track{flex:1;height:7px;background:var(--border);border-radius:99px;overflow:hidden}
+.tb-fill{height:100%;background:linear-gradient(90deg,var(--red),#e67e22);border-radius:99px;transition:width .4s}
+.tb-fill.pass{background:linear-gradient(90deg,var(--green),#52b788)}
+.tb-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;min-width:48px;text-align:right}
+
+/* Card */
+.card-scene{width:100%;max-width:680px;height:340px;perspective:1200px;cursor:pointer;margin-bottom:20px}
+.flip-card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.4,0,.2,1)}
+.flip-card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+
+.card-front{
+  background:var(--white);border:1.5px solid var(--border);
+  box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;padding:40px 36px;
+}
+.cf-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.cf-num::after{content:'';flex:1;height:1px;background:var(--border)}
+.cf-q{font-family:'Lora',serif;font-size:clamp(17px,3.5vw,22px);line-height:1.45;color:var(--ink)}
+.cf-hint{margin-top:auto;padding-top:24px;font-size:12px;color:var(--muted);font-style:italic}
+
+.card-back{
+  background:var(--white);border:1.5px solid var(--green-border);
+  box-shadow:var(--shadow);transform:rotateY(180deg);overflow-y:auto;
+  padding:24px 32px;display:flex;flex-direction:column;
+}
+.cb-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.cb-label::after{content:'';flex:1;height:1px;background:var(--green-border)}
+.cb-answer{font-size:13.5px;line-height:1.7;color:var(--ink2);flex:1}
+.cb-answer strong{color:var(--ink);font-weight:600}
+.cb-edit-btn{
+  margin-top:12px;align-self:flex-end;background:none;border:1px solid var(--border2);
+  border-radius:8px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all .2s;
+}
+.cb-edit-btn:hover{color:var(--ink);border-color:var(--muted)}
+
+/* Feedback */
+.fb-row{
+  display:flex;gap:12px;justify-content:center;max-width:680px;width:100%;
+  opacity:0;pointer-events:none;transition:opacity .25s;margin-bottom:12px;
+}
+.fb-row.show{opacity:1;pointer-events:all}
+.btn-fb{
+  flex:1;max-width:190px;padding:13px 18px;border-radius:12px;border:1.5px solid;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;
+  transition:all .18s;display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.btn-fb:active{transform:scale(.97)}
+.btn-no{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+.btn-no:hover{background:#fde5e3}
+.btn-yes{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.btn-yes:hover{background:#d9ede4}
+.btn-skip{
+  display:block;margin:0 auto;background:none;border:1px solid var(--border);
+  border-radius:8px;padding:8px 20px;font-family:'DM Sans',sans-serif;font-size:13px;
+  color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.btn-skip:hover{color:var(--ink);border-color:var(--muted)}
+
+/* ══════════ RESULTS ══════════ */
+#results{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+.res-wrap{width:100%;max-width:520px}
+.res-icon{font-size:52px;text-align:center;margin-bottom:16px}
+.res-title{font-family:'Lora',serif;font-size:30px;text-align:center;margin-bottom:6px}
+.res-title em{font-style:italic;color:var(--green)}
+.res-sub{font-size:15px;color:var(--muted);text-align:center;font-style:italic;margin-bottom:32px}
+
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.res-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 10px;text-align:center}
+.res-box-n{font-family:'Lora',serif;font-size:30px;line-height:1;margin-bottom:4px}
+.res-box-l{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+
+.res-banner{border-radius:var(--r);padding:16px 22px;margin-bottom:22px;font-size:14px;line-height:1.55}
+.res-banner.pass{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.res-banner.fail{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.res-banner strong{font-weight:600}
+
+.res-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.btn-primary{
+  padding:13px 30px;border-radius:12px;border:none;background:var(--ink);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.btn-primary:hover{background:var(--ink2);transform:translateY(-1px)}
+.btn-secondary{
+  padding:12px 26px;border-radius:12px;border:1.5px solid var(--border2);
+  background:var(--white);color:var(--ink);font-family:'DM Sans',sans-serif;
+  font-size:15px;cursor:pointer;transition:all .2s;
+}
+.btn-secondary:hover{border-color:var(--ink2)}
+
+/* Anims */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .35s ease forwards}
+
+/* ══════════ LOCKED SCREEN ══════════ */
+#locked{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+.locked-icon{font-size:48px;margin-bottom:20px}
+.locked-title{font-family:'Lora',serif;font-size:26px;margin-bottom:10px}
+.locked-msg{font-size:15px;color:var(--muted);max-width:380px;line-height:1.6;margin-bottom:28px;font-style:italic}
+.locked-req{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px 24px;max-width:380px;width:100%;margin-bottom:24px}
+.locked-req-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.locked-req-body{font-size:14px;color:var(--ink2);line-height:1.6}
+.locked-req-body strong{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div id="home" class="screen active">
+  <nav class="home-nav">
+    <div class="home-nav-title">Anatomy II</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('days')">Jours</button>
+      <button class="nav-tab" onclick="switchTab('struggle')">💀 Galères</button>
+    </div>
+  </nav>
+
+  <div class="home-body">
+    <div class="home-hero fu">
+      <h1>Révision<br><em>structurée</em></h1>
+      <p>Maîtrise chaque jour avant de passer au suivant</p>
+    </div>
+
+    <div class="overall-progress fu">
+      <div class="op-row">
+        <span class="op-label">Progression globale</span>
+        <span class="op-pct" id="overall-pct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="overall-fill" style="width:0%"></div></div>
+    </div>
+
+    <!-- DAYS TAB -->
+    <div id="tab-days">
+      <div class="section-label">Programme</div>
+      <div class="days-list" id="days-list"></div>
+    </div>
+
+    <!-- STRUGGLE TAB -->
+    <div id="tab-struggle" style="display:none">
+      <div class="section-label">Questions avec 5+ erreurs</div>
+      <div class="struggle-section" id="struggle-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <button class="btn-back" onclick="goHome()">← Retour</button>
+    <div class="qh-info">
+      <div class="qh-label" id="qh-label">Jour 1</div>
+      <div class="qh-title" id="qh-title">Le Neurone</div>
+    </div>
+  </div>
+
+  <div class="thresh-bar-wrap">
+    <span class="tb-label">Seuil</span>
+    <div class="tb-track"><div class="tb-fill" id="tb-fill" style="width:0%"></div></div>
+    <span class="tb-num" id="tb-num">0 / 0</span>
+  </div>
+
+  <div class="round-line">Tour <span id="round-num">1</span> · Q <span id="q-pos">1</span> / <span id="q-tot">0</span></div>
+  <div class="dots-wrap" id="dots-wrap"></div>
+
+  <div class="card-scene" onclick="flipCard()">
+    <div class="flip-card" id="flip-card">
+      <div class="card-face card-front">
+        <div class="cf-num" id="cf-num">Q1</div>
+        <div class="cf-q" id="cf-q">Chargement...</div>
+        <div class="cf-hint">↩ Clique pour voir la réponse</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="cb-label">Réponse</div>
+        <div class="cb-answer" id="cb-answer"></div>
+        <button class="cb-edit-btn" onclick="openEdit(event)">✏ Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fb-row" id="fb-row">
+    <button class="btn-fb btn-no" onclick="answer(false)">✗ Je ne savais pas</button>
+    <button class="btn-fb btn-yes" onclick="answer(true)">✓ Je savais</button>
+  </div>
+  <button class="btn-skip" onclick="skip()">Passer →</button>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div id="results" class="screen">
+  <div class="res-wrap">
+    <div class="res-icon" id="res-icon">🎉</div>
+    <div class="res-title" id="res-title">Jour <em>terminé</em> !</div>
+    <div class="res-sub" id="res-sub"></div>
+    <div class="res-grid">
+      <div class="res-box"><div class="res-box-n" id="rs-seen" style="color:var(--ink2)">0</div><div class="res-box-l">Vues</div></div>
+      <div class="res-box"><div class="res-box-n" id="rs-ok" style="color:var(--green)">0</div><div class="res-box-l">Connues</div></div>
+      <div class="res-box"><div class="res-box-n" id="rs-no" style="color:var(--red)">0</div><div class="res-box-l">Ratées</div></div>
+    </div>
+    <div class="res-banner" id="res-banner"></div>
+    <div class="res-btns" id="res-btns"></div>
+  </div>
+</div>
+
+<!-- ══ LOCKED ══ -->
+<div id="locked" class="screen">
+  <div class="locked-icon">🔒</div>
+  <div class="locked-title" id="locked-title">Jour verrouillé</div>
+  <div class="locked-msg" id="locked-msg"></div>
+  <div class="locked-req"><div class="locked-req-title">Pour déverrouiller</div><div class="locked-req-body" id="locked-body"></div></div>
+  <button class="btn-primary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ══ EDIT MODAL ══ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>Modifier la réponse</h3>
+    <div class="modal-q" id="modal-q"></div>
+    <textarea id="modal-ta"></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEdit()">Annuler</button>
+      <button class="btn-save" onclick="saveEdit()">Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════
+// DAYS CONFIG
+// ════════════════════════
+const DAYS = [
+  {id:1,title:"Le Neurone",sub:"Structure, extensions, types, synapse",threshold:.75,cards:[1,2,3,4,5,6,7,8,35,36,37,38]},
+  {id:2,title:"Cerveau & Moelle",sub:"Encéphale, moelle, méninges, nerfs spinaux",threshold:.75,cards:[9,10,11,18,19,20,21,33,34,39,40,41,42,43,44,45,46,47,48,49,59]},
+  {id:3,title:"Réflexes",sub:"Arcs réflexes, lois de Pflüger, types",threshold:.80,cards:[12,13,14,15,16,17,25,50,51,52,55,56]},
+  {id:4,title:"Système Autonome",sub:"Sympathique, parasympathique, nerfs crâniens",threshold:.80,cards:[22,23,24,26,27,28,29,30,31,32,53,54,57,58,60,61,62,63]}
+];
+
+// ════════════════════════
+// CARDS DATA
+// ════════════════════════
+const DEFAULT_ANSWERS = {
+1:"Central nervous system: brain + spinal cord. Peripheral nervous system: spinal nerves + cranial nerves + autonomic (sympathetic + parasympathetic). Cells: neurons + glial cells.",
+2:"Cell body (nucleus + Nissl corpuscles + neurofibrils) + dendrites (multiple, receive signals, centripetal) + axon (single, transmits signals, centrifugal, ends in terminal buttons with neurotransmitter vesicles).",
+3:"Dendrites: multiple, short, branched — conduct impulses centripetally (toward cell body), receive input. Axon: single, long — conducts impulses centrifugally (away from cell body), releases neurotransmitters.",
+4:"Single efferent extension (up to 1 m). Sheaths: Schwann sheath + myelin sheath (nodes of Ranvier, saltatory conduction up to 100 m/s) + Henle sheath. Ends in terminal buttons with mitochondria and neurotransmitter vesicles.",
+5:"Cell body: nucleus + Nissl corpuscles (protein synthesis) + neurofibrils (transport and support). Dendrites: multiple branched extensions, contain Nissl corpuscles near base, conduct impulses centripetally toward the cell body.",
+6:"By extensions: multipolar (1 axon + several dendrites, most common) / bipolar / pseudounipolar (sensory ganglia). By function: sensory (receptors to CNS) / motor (CNS to muscles/glands) / association (interneurons in CNS) / vegetative (autonomic organs).",
+7:"Motor pathway: 2 neurons (cortex/brainstem + anterior horn) — carries commands to muscles. Sensory pathway: 3 neurons (spinal ganglion + spinal cord + thalamus to cortex) — carries sensory info to brain. Glial cells: x10 more than neurons — structural support, myelin synthesis, phagocytosis. CNS types: astrocytes, oligodendrocytes, microglia, ependymal cells. PNS types: Schwann cells, satellite cells.",
+8:"Specialized unidirectional junction. Structure: presynaptic button (vesicles + mitochondria) / synaptic cleft (~20 nm) / postsynaptic membrane (receptors). Impulse -> Ca2+ enters -> neurotransmitter released -> binds receptors -> response. Types: axodendritic, axosomatic, axoaxonic / chemical or electrical.",
+9:"4 parts: brain stem (medulla + pons + midbrain) + cerebellum + diencephalon + cerebral hemispheres.",
+10:"Medulla oblongata: vital respiratory/cardiac centers, cranial nerves IX-XII, pyramidal decussation. Pons: cranial nerves V-VIII, middle cerebellar peduncles, 4th ventricle. Midbrain: cranial nerves III-IV, red nucleus (motor coordination), substantia nigra (dopamine), quadrigeminal colliculi (visual/auditory reflexes), cerebral aqueduct.",
+11:"Cerebellum: vermis + 2 hemispheres, gray matter outside (Purkinje cells), white inside — coordination, tone, balance. Diencephalon: thalamus (sensory relay, all except olfaction) + hypothalamus (autonomic + hormones + homeostasis) + epithalamus (pineal gland, melatonin) + metathalamus (auditory + visual relay). Encloses 3rd ventricle. Cerebral hemispheres: 4 lobes (frontal, parietal, temporal, occipital), 6-layer neocortex (~14-18 billion neurons), basal nuclei inside — movement, sensation, language, consciousness.",
+12:"Reflex act: physiological response to a stimulus on a receptor field — fundamental mechanism of the nervous system. Reflex arc (5 components): receptor -> afferent pathway -> nerve center -> efferent pathway -> effector.",
+13:"2 neurons (1 sensory + 1 motor), 1 synapse, no interneurons, short latency, localized. Patellar reflex: tap tendon -> spindle activated -> sensory neuron (L3-L4 ganglion) synapses DIRECTLY on anterior horn motor neuron -> quadriceps contracts -> knee extends.",
+14:"3+ neurons, 2+ synapses, interneurons, longer latency, can irradiate. Flexion reflex: painful stimulus -> nociceptor -> interneurons -> flexor motor neurons -> limb withdrawal. Stronger: cross-extensor reflex (opposite limb extends). Very strong: all 4 limbs (Pfluger's generalization law).",
+15:"1. Localization: weak -> small local response. 2. Unilaterality: moderate -> whole stimulated limb. 3. Symmetry: stronger -> both same-side limbs. 4. Irradiation: even stronger -> all 4 limbs. 5. Generalization: very strong -> whole body.",
+16:"C8-T2: cardioaccelerator + pupil dilator. Dorso-lumbar: vasoconstriction + sweating + pilomotor + GI motility. S2-S4: micturition + defecation + sexual reflexes. All subordinate to higher centers.",
+17:"Receptor (skin/muscle/tendon) -> sensory neuron (spinal ganglion, posterior root) -> nerve center (spinal cord gray matter) -> ONE motor neuron (anterior horn, anterior root) -> skeletal muscle. Key: efferent path = 1 neuron only (vs. 2 in vegetative arc).",
+18:"Foramen magnum to L2, ~43 cm, 31 pairs of spinal nerves. Gray matter (H-shape): anterior horns (motor neurons) + posterior horns (sensory neurons) + lateral horns T1-L2 (sympathetic) + gray commissure + ependymal canal. White matter: posterior funiculus (Goll + Burdach, conscious proprioception) + lateral funiculus (crossed corticospinal, spinocerebellar, spinothalamic) + anterior funiculus (direct corticospinal, vestibulospinal).",
+19:"31 pairs, all mixed. Anterior (motor) root + posterior (sensory) root + spinal ganglion -> mixed trunk -> exits intervertebral foramen -> dorsal branch (back) + ventral branch (plexuses: cervical, brachial, lumbar, sacral; thoracic = 12 intercostal nerves). Wrapped in: epineurium -> perineurium -> endoneurium.",
+20:"3 layers: dura mater (outer, tough — falx cerebri, tentorium, venous sinuses; spinal: separated from canal by epidural space) + arachnoid (middle, delicate — subarachnoid space contains CSF) + pia mater (inner, vascular, adheres to nervous tissue). Arachnoid + pia mater = leptomeninges.",
+21:"Medulla oblongata (vital centers, cranial nerves IX-XII, pyramidal decussation) + pons (cranial nerves V-VIII, cerebellar peduncles, 4th ventricle) + midbrain (cranial nerves III-IV, red nucleus, substantia nigra, quadrigeminal colliculi, cerebral aqueduct). All contain ascending/descending tracts + motor/sensory/autonomic nuclei.",
+22:"I Olfactory (smell) . II Optic (vision) . III Oculomotor (eye movements, pupil) . IV Trochlear (superior oblique) . V Trigeminal (face sensation + mastication) . VI Abducens (lateral rectus) . VII Facial (expression + taste + glands) . VIII Vestibulocochlear (hearing + balance) . IX Glossopharyngeal (taste + pharynx + parotid) . X Vagus (parasympathetic thorax/abdomen) . XI Accessory (trapezius + SCM) . XII Hypoglossal (tongue).",
+23:"V Trigeminal (mixed): face sensation via 3 branches (ophthalmic + maxillary = sensory; mandibular = mixed) + mastication muscles. VII Facial (mixed): motor to facial expression muscles + taste anterior 2/3 tongue + parasympathetic to salivary/lacrimal glands. X Vagus (mixed): longest cranial nerve, parasympathetic to heart/lungs/GI + motor to pharynx/larynx + sensory from viscera.",
+24:"Unconditioned: innate, species-specific, stable, no learning needed (e.g. pain withdrawal, salivation at food). Conditioned: learned, individual, extinguishable — initially indifferent stimulus repeatedly paired with unconditioned stimulus until it triggers the response alone. Closes at cortical level. Pavlov: food + bell x10-30 times -> bell alone -> salivation. Without reinforcement -> extinction (cortical inhibition).",
+25:"Same 5 components as somatic arc but efferent path uses 2 neurons: preganglionic (myelinated axon -> vegetative ganglion, releases acetylcholine) + postganglionic (unmyelinated axon -> smooth muscle/gland, releases noradrenaline for sympathetic or acetylcholine for parasympathetic).",
+26:"Controls involuntary functions (cardiac muscle, smooth muscle, glands). Sympathetic (T1-L2, noradrenaline, fight-or-flight) vs parasympathetic (brainstem CN III/VII/IX/X + S2-S4, acetylcholine, rest-and-digest). Most organs have dual antagonistic innervation. Regulated by hypothalamus + cortex.",
+27:"Preganglionic: lateral horn T1-L2, SHORT myelinated axons -> paravertebral chain ganglia (acetylcholine synapse). Postganglionic: LONG unmyelinated axons -> effectors (noradrenaline). Exception: sweat glands (acetylcholine). Adrenal medulla: innervated directly by preganglionic fiber -> adrenaline + noradrenaline into bloodstream.",
+28:"Preganglionic: brainstem (CN III, VII, IX, X) + sacral S2-S4, LONG myelinated axons -> terminal ganglia near/inside organ (acetylcholine synapse). Postganglionic: SHORT unmyelinated axons -> effectors (acetylcholine). Both synapses = cholinergic. Key: ganglia near the organ, not near the spine.",
+29:"Heart: increased rate + force + conduction. Eyes: pupil dilation (mydriasis). Airways: bronchodilation. Blood vessels: vasoconstriction -> increased blood pressure. GI: decreased motility, sphincters contracted. Liver: glycogenolysis -> glucose into blood. Sweat glands: increased secretion. Adrenal medulla: adrenaline + noradrenaline. Bladder: internal sphincter contracted -> urinary retention.",
+30:"Heart: decreased rate and conduction (bradycardia). Eyes: pupil constriction (miosis), near vision accommodation. Airways: bronchoconstriction, increased mucus. GI: increased motility, sphincters relaxed -> digestion + defecation. Glands: increased saliva (watery), tears, pancreatic enzymes. Bladder: detrusor contracts, internal sphincter relaxes -> urination.",
+31:"Eye: sympathetic -> pupil dilation (mydriasis), distance vision / parasympathetic -> pupil constriction (miosis), near vision. Heart: sympathetic -> tachycardia, increased force / parasympathetic (vagus) -> bradycardia, decreased conduction. GI tract: sympathetic -> decreased motility, sphincters contracted / parasympathetic -> increased motility (peristalsis), sphincters relaxed.",
+32:"By origin: exteroreceptors (outside) / interoceptors/visceroreceptors (internal organs) / proprioceptors (muscles, tendons, joints — body position and movement). By energy type: mechanoreceptors / thermoreceptors / chemoreceptors / photoreceptors / nociceptors (pain). By adaptation speed: phasic (fast-adapting) / tonic (slow-adapting).",
+33:"Encephalon (brain stem + cerebellum + diencephalon + cerebral hemispheres) + spinal cord. Composed of gray matter (neuronal cell bodies) and white matter (myelinated axon tracts).",
+34:"Somatic: 31 pairs of spinal nerves (mixed, body) + 12 pairs of cranial nerves (sensory/motor/mixed, head). Autonomic (vegetative): sympathetic (paravertebral/prevertebral chain ganglia) + parasympathetic (terminal ganglia near/in organs). All nerves wrapped in epineurium -> perineurium -> endoneurium.",
+35:"Sensory (afferent): receptors -> CNS, carry information about the environment. Motor (efferent): CNS -> effectors, carry movement commands. Mixed: both directions (most spinal nerves are mixed).",
+36:"Cell body (perikaryon): nucleus + Nissl corpuscles (protein synthesis) + neurofibrils (transport + support) + mitochondria. Dendrites: multiple branched extensions, centripetal, input zone. Axon (neurite): single long extension, axolemma, Schwann sheath + myelin sheath (nodes of Ranvier) + Henle sheath, ends in terminal buttons with neurotransmitter vesicles, centrifugal, output zone.",
+37:"Dendrites: multiple, short, branched — receive signals from other neurons, conduct centripetally toward cell body (input zone). Axon: single, long (up to 1 m) — transmit impulse centrifugally away from cell body, release neurotransmitters at terminal buttons (output zone).",
+38:"Specialized unidirectional junction between a neuron and another cell. Components: presynaptic terminal button (synaptic vesicles + mitochondria) / synaptic cleft (~20 nm) / postsynaptic membrane (specific receptors). Mechanism: action potential -> Ca2+ enters -> vesicles fuse -> neurotransmitter released -> binds receptors -> depolarization or inhibition.",
+39:"CNS portion inside the cranial box, organ of consciousness. Brain stem (vital centers + cranial nerve nuclei) + cerebellum (movement coordination, balance) + diencephalon (thalamus = sensory relay; hypothalamus = autonomic + hormonal; epithalamus = melatonin; metathalamus = auditory/visual relay) + cerebral hemispheres (voluntary movement, sensory, language, memory, consciousness).",
+40:"Most caudal part of the brain, contains vital centers. Medulla oblongata: vital respiratory/cardiac centers, cranial nerves IX-XII, pyramidal decussation. Pons: cranial nerves V-VIII, middle cerebellar peduncles, 4th ventricle. Midbrain: cranial nerves III-IV, red nucleus (motor coordination), substantia nigra (dopamine, movement), quadrigeminal colliculi (visual/auditory reflexes), cerebral aqueduct.",
+41:"Postero-inferior location. Vermis + 2 hemispheres, 3 pairs of cerebellar peduncles. Gray matter outside (cortex: 3 layers — molecular, Purkinje cell, granular) + white matter inside (4 pairs of cerebellar nuclei). Does not initiate movement — coordinates it, regulates muscle tone, maintains balance and posture.",
+42:"Between midbrain and cerebrum, encloses 3rd ventricle. Thalamus: main relay for all sensory info going to cortex (except olfaction). Hypothalamus: autonomic control + hormonal secretion via pituitary + temperature + hunger + thirst + sleep. Epithalamus: pineal gland -> melatonin -> sleep-wake cycles. Metathalamus: medial geniculate (auditory relay) + lateral geniculate (visual relay). Subthalamus: extrapyramidal motor control.",
+43:"Largest part (~1360 g). 2 hemispheres separated by interhemispheric fissure, connected by corpus callosum. 4 lobes: frontal (movement, planning) / parietal (somatosensory) / temporal (hearing, memory, language) / occipital (vision). Gray cortex outside (6-layer neocortex, ~14-18 billion neurons) + white matter + basal nuclei inside. Major sulci: Rolando (central) + Sylvius (lateral).",
+44:"Bundle of axons outside the CNS + connective tissue sheaths + blood vessels. 3 sheaths from outside to inside: epineurium (entire nerve) -> perineurium (around fascicles) -> endoneurium (around each fiber). Motor somatic fibers = myelinated; autonomic postganglionic fibers = unmyelinated.",
+45:"CNS in vertebral canal, foramen magnum to L2, ~43-45 cm. Ends as medullary cone -> filum terminale -> coccyx. 31 pairs of spinal nerves. Functions: reflex (somatic + vegetative centers in gray matter) + conduction (ascending sensory tracts + descending motor tracts).",
+46:"Slightly compressed cylinder. Cervical enlargement (C4-T1): brachial plexus, upper limb. Lumbar enlargement (L2-S3): lumbar/sacral plexus, lower limb. Anterior face: anterior median fissure + anterior lateral grooves (motor roots emerge). Posterior face: posterior median groove + posterior lateral grooves (sensory roots enter). Below L2: medullary cone -> filum terminale + cauda equina.",
+47:"Gray matter (H-shape): anterior horns (motor neurons -> motor roots) + posterior horns (sensory neurons <- sensory roots) + lateral horns T1-L2 (sympathetic neurons) + gray commissure (ependymal canal). White matter: posterior funiculus (Goll + Burdach -> conscious proprioception + fine touch) + lateral funiculus (crossed corticospinal, spinocerebellar, lateral spinothalamic) + anterior funiculus (direct corticospinal, vestibulospinal).",
+48:"3 layers outside to inside: dura mater (thick fibrous — falx cerebri, tentorium cerebelli, venous sinuses; spinal: epidural space with fat + venous plexuses) + arachnoid (delicate — subarachnoid space filled with CSF, cushions + nourishes) + pia mater (thin, vascular, adheres to nervous tissue, nutrition). Arachnoid + pia mater = leptomeninges.",
+49:"31 pairs (8C, 12T, 5L, 5S, 1Co), all mixed. Anterior (motor) root + posterior (sensory) root + spinal ganglion -> mixed trunk -> exits intervertebral foramen -> dorsal branch (back) + ventral branch (plexuses: cervical, brachial, lumbar, sacral; thoracic = 12 intercostal nerves). Below L2: cauda equina (nerve roots run vertically in canal).",
+50:"Reflex act: fundamental mechanism of the nervous system — physiological response to a stimulus on a receptor field. Reflex arc (anatomical substrate), 5 components: receptor -> afferent pathway -> nerve center -> efferent pathway -> effector.",
+51:"1. Receptor (skin, muscle, tendon). 2. Sensory neuron (spinal ganglion, posterior root). 3. Nerve center (spinal cord gray matter — motor neuron directly or via interneurons). 4. ONE motor neuron (anterior horn, anterior root). 5. Skeletal muscle effector. Key: efferent path = 1 neuron (unlike vegetative arc with 2).",
+52:"1. Visceroreceptor (baroreceptors, chemoreceptors in organ/vessel walls). 2. Afferent neuron (spinal/cranial ganglion). 3. Nerve center (lateral horn or brainstem autonomic nuclei). 4. TWO efferent neurons: preganglionic (myelinated, acetylcholine -> ganglion) + postganglionic (unmyelinated -> effector: noradrenaline for sympathetic / acetylcholine for parasympathetic). 5. Smooth muscle or gland.",
+53:"Preganglionic neuron: lateral horn T1-L2, SHORT myelinated axon -> paravertebral chain ganglion via white rami communicantes (acetylcholine synapse). Postganglionic neuron: LONG unmyelinated axon -> effector via gray rami communicantes (releases noradrenaline). Special case: adrenal medulla innervated directly by preganglionic fiber -> adrenaline + noradrenaline into bloodstream (no postganglionic neuron).",
+54:"Preganglionic neuron: brainstem (CN III, VII, IX, X) or sacral S2-S4, LONG myelinated axon -> terminal ganglion near/inside organ (acetylcholine synapse). Postganglionic neuron: SHORT unmyelinated axon -> effector directly (acetylcholine). Both synapses = cholinergic. Key: ganglia near organ (not near spine) -> long preganglionic, short postganglionic (opposite of sympathetic).",
+55:"2 neurons, 1 synapse, no interneurons. Patellar reflex: tap patellar tendon -> quadriceps stretched -> muscle spindle activated -> sensory neuron (L3-L4 spinal ganglion) -> axon synapses DIRECTLY on anterior horn motor neuron (1 synapse) -> motor neuron -> quadriceps contracts -> knee extends. Very short latency, strictly localized.",
+56:"3+ neurons, 2+ synapses, interneurons. Flexion reflex: painful stimulus -> nociceptors -> sensory neuron -> interneurons in spinal cord (multiple synapses) -> flexor motor neurons -> limb withdrawal. Stronger: cross-extensor reflex (opposite limb extends to support body). Very strong: all 4 limbs (Pfluger's generalization law). Longer latency, protective function.",
+57:"12 pairs. Sensory: I, II, VIII. Motor: III, IV, VI, XI, XII. Mixed: V, VII, IX, X. V Trigeminal (mixed): main sensory nerve of face (3 branches) + mastication muscles. VII Facial (mixed): motor to mimicry muscles + taste anterior 2/3 tongue + parasympathetic to salivary/lacrimal glands. X Vagus (mixed): longest cranial nerve, parasympathetic to heart/lungs/GI + motor to pharynx/larynx + visceral sensory.",
+58:"Unconditioned: innate, genetically determined, species-specific, stable, no learning needed — same biologically meaningful stimulus always triggers same response (e.g. pain withdrawal, salivation at food). Conditioned: learned, individual, extinguishable — initially indifferent stimulus repeatedly paired with unconditioned stimulus until it triggers the response alone; mediated at cortical level; disappears without reinforcement (cortical inhibition). Example: Pavlov's dog salivating to a bell.",
+59:"Gray matter clusters deep inside cerebral hemispheres (surrounded by white matter), also called striate bodies. Main nuclei: caudate nucleus + putamen (= striatum) + globus pallidus + claustrum; associated with subthalamic nuclei + substantia nigra. Extrapyramidal motor system: modulate motor programs (direction, speed, amplitude) via cortex -> striatum -> globus pallidus -> thalamus -> cortex loop. Parkinson's: substantia nigra degeneration -> no dopamine -> tremor, rigidity.",
+60:"By origin: external (light, sound, touch, temperature) / internal (blood pressure, muscle stretch, blood chemistry). By energy type: mechanical / thermal / chemical / electromagnetic (light) / noxious/algogenic (tissue damage -> pain). By specificity: adequate (specific energy for that receptor) / inadequate (non-specific energy that still activates it). By adaptation: phasic (fast-adapting, transient response) / tonic (slow-adapting, sustained response).",
+61:"Mechanoreceptors in blood vessel walls/heart detecting wall stretch (= pressure changes) -> regulate cardiovascular function via baroreflex. Low-pressure type: veins + heart (detect blood volume). High-pressure type: carotid sinus + aortic arch (detect arterial pressure). Increased pressure -> increased firing -> CNS -> decreased heart rate (vagus) + vasodilation -> pressure normalizes. Sensitivity decreases with aging; chronic hypertension: reset to higher pressure; impaired in heart failure + MI; aerobic exercise improves sensitivity -> resting bradycardia.",
+62:"Controls all involuntary functions (cardiac muscle, smooth muscle, glands), below conscious awareness. 2-neuron efferent chain (preganglionic -> postganglionic). Sympathetic (T1-L2, noradrenaline): fight-or-flight. Parasympathetic (brainstem CN III/VII/IX/X + S2-S4, acetylcholine): rest-and-digest. Most organs have dual antagonistic innervation. Regulated by hypothalamus + cortex.",
+63:"Perceives body position, movement and muscle tension -> coordinates movement, maintains balance. Receptors (proprioceptors): neuromuscular spindles (detect muscle stretch -> trigger stretch reflex, maintain muscle tone) + Golgi tendon organs (detect tendon tension during contraction -> inhibit excessive force, protect muscle) + Vater-Pacini corpuscles (pressure + vibration) + free nerve endings (joint pain). Conduction pathways: spinobulbar tracts (conscious proprioception -> cortex via thalamus) + spinocerebellar tracts (unconscious proprioception -> cerebellum for automatic adjustment). Central segment: sensorimotor parietal lobe + cerebellar cortex."
+};
+
+const QUESTIONS = {
+1:"The composition of the nervous system from a structural point of view.",
+2:"The neuron. Components in brief.",
+3:"Neural extensions — generalities.",
+4:"The axon.",
+5:"Dendrites and cell body.",
+6:"Types of neurons.",
+7:"Motor pathway, sensory pathway and glial cells.",
+8:"Synapse. Structure. Types.",
+9:"Components of the encephalon.",
+10:"Components of the brain stem. Generalities.",
+11:"Cerebellum, diencephalon and cerebral hemispheres. Overview.",
+12:"Definition of reflex act and reflex arc. Components.",
+13:"Monosynaptic reflexes. Example.",
+14:"Polysynaptic reflexes. Examples.",
+15:"The laws of reflexes stated by Pflüger.",
+16:"Medullary vegetative reflexes.",
+17:"Somatic reflex arc.",
+18:"Spinal cord. General and internal structure.",
+19:"Spinal nerve. Generalities and structure.",
+20:"Meninges.",
+21:"Brain stem generalities.",
+22:"Cranial nerves. Enumeration.",
+23:"Cranial nerves. Choose the description of three of them.",
+24:"Conditioned and unconditioned reflexes. Definition and examples. Pavlov's experiment.",
+25:"Vegetative reflex arc.",
+26:"Vegetative or autonomic nervous system.",
+27:"Sympathetic nervous system.",
+28:"Parasympathetic nervous system.",
+29:"Effects of sympathetic stimulation.",
+30:"Effects of parasympathetic stimulation.",
+31:"Sympathetic and parasympathetic stimulation of three areas/organs of your choice.",
+32:"Classification of receptors.",
+33:"Components of the central nervous system.",
+34:"Components of the peripheral nervous system.",
+35:"Functionally, how many types of nerves do you know and what is their role?",
+36:"List the components of a neuron.",
+37:"What are neural extensions and what are their roles?",
+38:"What is a synapse and what are its components?",
+39:"What is the brain (encephalon) and what are its components?",
+40:"Brain stem. Generalities.",
+41:"The cerebellum. Generalities.",
+42:"The diencephalon. Generalities.",
+43:"Cerebral hemispheres. Generalities.",
+44:"Structure of a nerve. Generalities.",
+45:"Spinal cord. Generalities.",
+46:"External morphology of the spinal cord.",
+47:"Internal morphology of the spinal cord.",
+48:"Meninges. Generalities.",
+49:"Spinal nerves. Generalities.",
+50:"What is the reflex act and reflex arc?",
+51:"Somatic reflex arc. Components.",
+52:"Vegetative reflex arc. Components.",
+53:"Sympathetic efferent pathway.",
+54:"Parasympathetic efferent pathway.",
+55:"Describe a monosynaptic reflex.",
+56:"Describe a polysynaptic reflex.",
+57:"What do you know about cranial nerves? Give an example of 3.",
+58:"What is a conditioned reflex? But an unconditional one? Explain the terms.",
+59:"What do you know about basal nuclei?",
+60:"Make a classification of stimuli (excitants).",
+61:"The baroreceptor. Generalities. Affecting baroreceptors.",
+62:"What do you know about the autonomic nervous system?",
+63:"What can you say about the kinesthetic analyzer."
+};
+
+// ════════════════════════
+// STATE
+// ════════════════════════
+let S = {
+  days:{},
+  errors:{}, // cardId -> error count
+  customAnswers:{}, // cardId -> custom answer string
+  currentDay:null,
+  isStruggleMode:false,
+  deck:[],
+  deckIdx:0,
+  round:1,
+  flipped:false,
+  sesCorrect:0,
+  sesWrong:0,
+  sesSeen:new Set(),
+  editCardId:null,
+  activeTab:'days'
+};
+
+function initDays(){
+  for(let d=1;d<=4;d++){
+    if(!S.days[d]) S.days[d]={correct:new Set(),wrong:new Set(),unlocked:d===1,completed:false};
+  }
+}
+
+function save(){
+  const out={days:{},errors:S.errors,customAnswers:S.customAnswers};
+  for(let d=1;d<=4;d++) out.days[d]={correct:[...S.days[d].correct],wrong:[...S.days[d].wrong],unlocked:S.days[d].unlocked,completed:S.days[d].completed};
+  localStorage.setItem('anat3',JSON.stringify(out));
+}
+
+function load(){
+  const raw=localStorage.getItem('anat3');
+  if(!raw) return;
+  try{
+    const p=JSON.parse(raw);
+    for(let d=1;d<=4;d++){
+      if(p.days&&p.days[d]){
+        S.days[d]={
+          correct:new Set(p.days[d].correct||[]),
+          wrong:new Set(p.days[d].wrong||[]),
+          unlocked:p.days[d].unlocked||d===1,
+          completed:p.days[d].completed||false
+        };
+      }
+    }
+    S.errors=p.errors||{};
+    S.customAnswers=p.customAnswers||{};
+  }catch(e){}
+}
+
+function getAnswer(id){
+  return S.customAnswers[id]||DEFAULT_ANSWERS[id]||'';
+}
+
+// ════════════════════════
+// HOME RENDER
+// ════════════════════════
+function renderHome(){
+  // overall
+  let total=63,totalOk=0;
+  for(let d=1;d<=4;d++) totalOk+=S.days[d].correct.size;
+  const pct=Math.round(totalOk/total*100);
+  document.getElementById('overall-pct').textContent=pct+'%';
+  document.getElementById('overall-fill').style.width=pct+'%';
+
+  // days
+  const list=document.getElementById('days-list');
+  list.innerHTML='';
+  DAYS.forEach(day=>{
+    const dp=S.days[day.id];
+    const n=day.cards.length;
+    const ok=dp.correct.size;
+    const needed=Math.ceil(n*day.threshold);
+    const p=n>0?ok/n*100:0;
+    const locked=!dp.unlocked;
+    const done=dp.completed;
+    const current=dp.unlocked&&!dp.completed;
+    const div=document.createElement('div');
+    div.className='day-row'+(locked?' locked':'')+(done?' done':'')+(current?' active-day':'');
+    div.innerHTML=`
+      <div class="day-num">Jour ${day.id}</div>
+      <div class="day-main">
+        <div class="day-title">${day.title}</div>
+        <div class="day-sub">${day.sub}</div>
+        <span class="thresh-pill">Seuil : ${Math.round(day.threshold*100)}%</span>
+      </div>
+      <div class="day-right">
+        <div class="day-score">${ok} / ${n}</div>
+        <div class="day-minibar"><div class="day-minifill" style="width:${p}%"></div></div>
+        <div class="day-status">${done?'✓':locked?'🔒':''}</div>
+      </div>`;
+    if(!locked) div.onclick=()=>startDay(day.id);
+    else div.onclick=()=>showLocked(day.id);
+    list.appendChild(div);
+  });
+
+  // struggle
+  renderStruggle();
+}
+
+function renderStruggle(){
+  const container=document.getElementById('struggle-list');
+  container.innerHTML='';
+  const hardIds=Object.entries(S.errors).filter(([id,n])=>n>=5).sort((a,b)=>b[1]-a[1]).map(([id])=>parseInt(id));
+  if(hardIds.length===0){
+    container.innerHTML='<div class="struggle-empty">Aucune question avec 5 erreurs ou plus pour l\'instant. Continue à réviser !</div>';
+    return;
+  }
+  hardIds.forEach(id=>{
+    const div=document.createElement('div');
+    div.className='struggle-card';
+    div.innerHTML=`<div class="struggle-q">Q${id}. ${QUESTIONS[id]}</div><div class="struggle-errors">${S.errors[id]} erreurs</div>`;
+    div.onclick=()=>startStruggle([id]);
+    container.appendChild(div);
+  });
+  const btn=document.createElement('button');
+  btn.className='btn-struggle-all';
+  btn.textContent=`▶ Tout réviser (${hardIds.length} questions)`;
+  btn.onclick=()=>startStruggle(hardIds);
+  container.appendChild(btn);
+}
+
+// ════════════════════════
+// TABS
+// ════════════════════════
+function switchTab(tab){
+  S.activeTab=tab;
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-tab')[tab==='days'?0:1].classList.add('active');
+  document.getElementById('tab-days').style.display=tab==='days'?'':'none';
+  document.getElementById('tab-struggle').style.display=tab==='struggle'?'':'none';
+}
+
+// ════════════════════════
+// LOCKED
+// ════════════════════════
+function showLocked(dayId){
+  const prev=DAYS[dayId-2];
+  const prevDp=S.days[dayId-1];
+  const needed=Math.ceil(prev.cards.length*prev.threshold);
+  document.getElementById('locked-title').textContent=`Jour ${dayId} verrouillé`;
+  document.getElementById('locked-msg').textContent=`Tu dois d'abord maîtriser le Jour ${dayId-1} — "${prev.title}".`;
+  document.getElementById('locked-body').innerHTML=`Obtiens <strong>${needed} bonnes réponses</strong> sur ${prev.cards.length} cartes.<br>Actuellement : <strong>${prevDp.correct.size} / ${needed}</strong>.`;
+  showScreen('locked');
+}
+
+// ════════════════════════
+// QUIZ START
+// ════════════════════════
+function startDay(dayId){
+  S.currentDay=dayId;
+  S.isStruggleMode=false;
+  S.round=1;
+  S.sesCorrect=0;
+  S.sesWrong=0;
+  S.sesSeen=new Set();
+  buildDeck(dayId);
+  const day=DAYS[dayId-1];
+  document.getElementById('qh-label').textContent=`Jour ${dayId}`;
+  document.getElementById('qh-title').textContent=day.title;
+  showScreen('quiz');
+  renderCard();
+}
+
+function startStruggle(ids){
+  S.currentDay=null;
+  S.isStruggleMode=true;
+  S.round=1;
+  S.sesCorrect=0;
+  S.sesWrong=0;
+  S.sesSeen=new Set();
+  const deck=[...ids];
+  shuffle(deck);
+  S.deck=deck;
+  S.deckIdx=0;
+  document.getElementById('qh-label').textContent='Mode galère 💀';
+  document.getElementById('qh-title').textContent=`${ids.length} questions difficiles`;
+  showScreen('quiz');
+  renderCard();
+}
+
+function buildDeck(dayId){
+  const day=DAYS[dayId-1];
+  const dp=S.days[dayId];
+  const wrong=day.cards.filter(id=>dp.wrong.has(id));
+  const notYet=day.cards.filter(id=>!dp.correct.has(id)&&!dp.wrong.has(id));
+  const correct=day.cards.filter(id=>dp.correct.has(id));
+  shuffle(wrong);shuffle(notYet);shuffle(correct);
+  S.deck=[...wrong,...notYet,...correct];
+  S.deckIdx=0;
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+
+// ════════════════════════
+// CARD RENDER
+// ════════════════════════
+function renderCard(){
+  if(S.isStruggleMode){
+    if(S.deckIdx>=S.deck.length){showResultsStruggle();return;}
+    document.getElementById('thresh-bar-wrap').style.display='none';
+    document.getElementById('round-line').style.display='none';
+  } else {
+    document.getElementById('thresh-bar-wrap').style.display='flex';
+    document.getElementById('round-line').style.display='block';
+    const dayId=S.currentDay;
+    const day=DAYS[dayId-1];
+    const dp=S.days[dayId];
+    const needed=Math.ceil(day.cards.length*day.threshold);
+    const have=dp.correct.size;
+    const pct=Math.min(100,have/needed*100);
+    const tf=document.getElementById('tb-fill');
+    tf.style.width=pct+'%';
+    tf.className='tb-fill'+(have>=needed?' pass':'');
+    document.getElementById('tb-num').textContent=`${have} / ${needed}`;
+    document.getElementById('round-num').textContent=S.round;
+    document.getElementById('q-pos').textContent=S.deckIdx+1;
+    document.getElementById('q-tot').textContent=S.deck.length;
+
+    if(S.deckIdx>=S.deck.length){
+      if(dp.correct.size>=needed){finishDay(true);return;}
+      S.round++;
+      if(S.round>6){finishDay(false);return;}
+      buildDeck(dayId);
+      if(S.deck.length===0){finishDay(dp.correct.size>=needed);return;}
+    }
+  }
+
+  const cardId=S.deck[S.deckIdx];
+  document.getElementById('flip-card').classList.remove('flipped');
+  S.flipped=false;
+  document.getElementById('fb-row').classList.remove('show');
+  document.getElementById('cf-num').textContent=`Q${cardId}`;
+  document.getElementById('cf-q').textContent=QUESTIONS[cardId]||'';
+  document.getElementById('cb-answer').textContent=getAnswer(cardId);
+
+  // dots
+  const wrap=document.getElementById('dots-wrap');
+  wrap.innerHTML='';
+  if(!S.isStruggleMode&&S.currentDay){
+    const day=DAYS[S.currentDay-1];
+    const dp=S.days[S.currentDay];
+    day.cards.forEach(id=>{
+      const dot=document.createElement('div');
+      let c='dot';
+      if(id===cardId) c+=' current';
+      else if(dp.correct.has(id)) c+=' correct';
+      else if(dp.wrong.has(id)) c+=' wrong';
+      dot.className=c;
+      wrap.appendChild(dot);
+    });
+  } else {
+    S.deck.forEach((id,i)=>{
+      const dot=document.createElement('div');
+      let c='dot';
+      if(i===S.deckIdx) c+=' current';
+      else if(i<S.deckIdx) c+=' seen';
+      dot.className=c;
+      wrap.appendChild(dot);
+    });
+  }
+}
+
+function flipCard(){
+  if(S.flipped) return;
+  S.flipped=true;
+  document.getElementById('flip-card').classList.add('flipped');
+  const id=S.deck[S.deckIdx];
+  S.sesSeen.add(id);
+  setTimeout(()=>document.getElementById('fb-row').classList.add('show'),280);
+}
+
+function answer(knew){
+  const id=S.deck[S.deckIdx];
+  if(knew){
+    S.sesCorrect++;
+    if(!S.isStruggleMode&&S.currentDay){
+      S.days[S.currentDay].correct.add(id);
+      S.days[S.currentDay].wrong.delete(id);
+    }
+  } else {
+    S.sesWrong++;
+    S.errors[id]=(S.errors[id]||0)+1;
+    if(!S.isStruggleMode&&S.currentDay){
+      S.days[S.currentDay].wrong.add(id);
+      S.days[S.currentDay].correct.delete(id);
+    }
+  }
+  document.getElementById('fb-row').classList.remove('show');
+  save();
+  S.deckIdx++;
+  setTimeout(renderCard,140);
+}
+
+function skip(){
+  document.getElementById('fb-row').classList.remove('show');
+  S.deckIdx++;
+  setTimeout(renderCard,100);
+}
+
+// ════════════════════════
+// FINISH
+// ════════════════════════
+function finishDay(passed){
+  const dayId=S.currentDay;
+  const day=DAYS[dayId-1];
+  const dp=S.days[dayId];
+  const needed=Math.ceil(day.cards.length*day.threshold);
+
+  if(passed){
+    dp.completed=true;
+    if(dayId<4) S.days[dayId+1].unlocked=true;
+  }
+  save();
+
+  document.getElementById('rs-seen').textContent=S.sesSeen.size;
+  document.getElementById('rs-ok').textContent=S.sesCorrect;
+  document.getElementById('rs-no').textContent=S.sesWrong;
+
+  const banner=document.getElementById('res-banner');
+  const btns=document.getElementById('res-btns');
+
+  if(passed){
+    document.getElementById('res-icon').textContent='🏆';
+    document.getElementById('res-title').innerHTML=`Jour ${dayId} <em>validé</em> !`;
+    document.getElementById('res-sub').textContent=`${dp.correct.size}/${day.cards.length} maîtrisées — seuil atteint.`;
+    banner.className='res-banner pass';
+    banner.innerHTML=dayId<4?`🔓 <strong>Jour ${dayId+1} — "${DAYS[dayId].title}"</strong> est déverrouillé !`:`🎉 <strong>Tous les jours complétés !</strong>`;
+    btns.innerHTML=`<button class="btn-primary" onclick="goHome()">← Accueil</button>${dayId<4?`<button class="btn-secondary" onclick="startDay(${dayId+1})">Jour ${dayId+1} →</button>`:''}`;
+  } else {
+    document.getElementById('res-icon').textContent='📚';
+    document.getElementById('res-title').innerHTML=`Pas encore <em>là...</em>`;
+    document.getElementById('res-sub').textContent=`Il te faut ${needed} bonnes réponses. Tu en as ${dp.correct.size}.`;
+    banner.className='res-banner fail';
+    banner.innerHTML=`Il te manque <strong>${needed-dp.correct.size} questions</strong>. Relis les ratées et recommence.`;
+    btns.innerHTML=`<button class="btn-primary" onclick="startDay(${dayId})">Recommencer</button><button class="btn-secondary" onclick="goHome()">← Accueil</button>`;
+  }
+  showScreen('results');
+}
+
+function showResultsStruggle(){
+  document.getElementById('rs-seen').textContent=S.sesSeen.size;
+  document.getElementById('rs-ok').textContent=S.sesCorrect;
+  document.getElementById('rs-no').textContent=S.sesWrong;
+  document.getElementById('res-icon').textContent='💀';
+  document.getElementById('res-title').innerHTML=`Session <em>galère</em> terminée`;
+  document.getElementById('res-sub').textContent=`${S.sesCorrect} / ${S.sesSeen.size} connues.`;
+  const banner=document.getElementById('res-banner');
+  banner.className='res-banner'+(S.sesCorrect>=S.sesSeen.size*0.7?' pass':' fail');
+  banner.innerHTML=S.sesCorrect>=S.sesSeen.size*0.7?'Bien joué, tu progresses sur les difficiles !':`Continue, ces questions méritent encore du travail.`;
+  document.getElementById('res-btns').innerHTML=`<button class="btn-primary" onclick="goHome()">← Accueil</button><button class="btn-secondary" onclick="startStruggle([...Object.entries(S.errors).filter(([id,n])=>n>=5).map(([id])=>parseInt(id))])">Recommencer</button>`;
+  showScreen('results');
+}
+
+// ════════════════════════
+// EDIT MODAL
+// ════════════════════════
+function openEdit(e){
+  e.stopPropagation();
+  const id=S.deck[S.deckIdx];
+  S.editCardId=id;
+  document.getElementById('modal-q').textContent=`Q${id}. ${QUESTIONS[id]}`;
+  document.getElementById('modal-ta').value=getAnswer(id);
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeEdit(){document.getElementById('modal').classList.remove('open')}
+
+function saveEdit(){
+  const id=S.editCardId;
+  const val=document.getElementById('modal-ta').value.trim();
+  if(val){
+    S.customAnswers[id]=val;
+    save();
+    document.getElementById('cb-answer').textContent=val;
+  }
+  closeEdit();
+}
+
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeEdit()});
+
+// ════════════════════════
+// NAV
+// ════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goHome(){
+  renderHome();
+  showScreen('home');
+  switchTab(S.activeTab);
+}
+
+// ════════════════════════
+// INIT
+// ════════════════════════
+load();
+initDays();
+renderHome();
+
+// expose for inline onclick in results struggle
+window.S=S;
+window.startStruggle=startStruggle;
+</script>
+</body>
+</html>
